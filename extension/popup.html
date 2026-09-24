@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Voice Browser</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --panel: #1e293b;
+        --panel2: #334155;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --accent: #2563eb;
+        --green: #059669;
+        --amber: #f59e0b;
+        --red: #ef4444;
+      }
+      * { box-sizing: border-box; }
+      body {
+        width: 340px;
+        margin: 0;
+        font: 13px/1.4 -apple-system, Segoe UI, Inter, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      header {
+        display: flex; align-items: center; gap: 8px;
+        padding: 10px 12px; border-bottom: 1px solid var(--panel2);
+      }
+      header .logo { font-weight: 700; font-size: 14px; }
+      header .logo span { color: var(--accent); }
+      .pill {
+        margin-left: auto; padding: 2px 9px; border-radius: 999px;
+        font-size: 11px; font-weight: 600; background: var(--panel2); color: var(--muted);
+      }
+      .pill.listening { background: var(--green); color: #fff; }
+      .pill.thinking { background: var(--amber); color: #111; }
+      .pill.error { background: var(--red); color: #fff; }
+      .gear { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 15px; padding: 2px 4px; }
+      .gear:hover { color: var(--text); }
+      main { padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; }
+      .mic-row { display: flex; gap: 8px; align-items: center; }
+      #micBtn {
+        flex: 1; padding: 10px; border: 0; border-radius: 10px;
+        font-size: 14px; font-weight: 700; cursor: pointer; background: var(--accent); color: #fff;
+      }
+      #micBtn.listening { background: var(--red); }
+      .card { background: var(--panel); border-radius: 10px; padding: 8px 10px; }
+      .card h3 { margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+      #transcript { font-size: 14px; min-height: 20px; }
+      #decision { font-size: 13px; }
+      #decision .sum { font-weight: 600; }
+      #decision.ok { color: var(--green); }
+      #decision.wait { color: var(--amber); }
+      #decision.ignore { color: var(--muted); }
+      #decision.confirm { color: var(--red); }
+      #decision.err { color: var(--red); }
+      .gates { margin-top: 6px; display: flex; flex-direction: column; gap: 2px; }
+      .gate { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+      .gate b { color: var(--text); font-weight: 600; }
+      .gate .pass { color: var(--green); }
+      .gate .fail { color: var(--red); }
+      #pending { background: var(--red); color: #fff; border-radius: 10px; padding: 8px 10px; font-weight: 600; }
+      #cands { display: flex; flex-direction: column; gap: 4px; }
+      .cand { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+      .cand .n {
+        min-width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center;
+        background: var(--accent); color: #fff; border-radius: 999px; font-weight: 700; font-size: 12px;
+      }
+      .hint-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+      .switch { position: relative; width: 34px; height: 18px; }
+      .switch input { opacity: 0; width: 0; height: 0; }
+      .slider {
+        position: absolute; inset: 0; border-radius: 999px; background: var(--panel2);
+        transition: .15s; cursor: pointer;
+      }
+      .slider::before {
+        content: ""; position: absolute; width: 14px; height: 14px; border-radius: 50%;
+        left: 2px; top: 2px; background: #fff; transition: .15s;
+      }
+      .switch input:checked + .slider { background: var(--green); }
+      .switch input:checked + .slider::before { transform: translateX(16px); }
+      .typed-row { display: flex; gap: 6px; }
+      #typed { flex: 1; padding: 7px 9px; border-radius: 8px; border: 1px solid var(--panel2); background: var(--panel); color: var(--text); font-size: 13px; }
+      #typed:focus { outline: 2px solid var(--accent); }
+      #typedSend { padding: 7px 12px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; font-weight: 600; }
+      footer { padding: 8px 12px; border-top: 1px solid var(--panel2); color: var(--muted); font-size: 11px; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+      footer .err { color: var(--red); width: 100%; }
+      .hint { font-size: 11px; color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">Voice <span>Browser</span></div>
+      <div id="statusPill" class="pill">idle</div>
+      <button id="settingsBtn" class="gear" title="Settings">⚙</button>
+    </header>
+    <main>
+      <div class="mic-row">
+        <button id="micBtn">Start mic</button>
+      </div>
+
+      <div class="card">
+        <h3>Heard</h3>
+        <div id="transcript">—</div>
+      </div>
+
+      <div id="pending" hidden></div>
+
+      <div class="card" id="decisionCard" hidden>
+        <h3>Last decision</h3>
+        <div id="decision" class="sum"></div>
+        <div id="gates" class="gates"></div>
+      </div>
+
+      <div class="card" id="candCard" hidden>
+        <h3>Which one? Say a number</h3>
+        <div id="cands"></div>
+      </div>
+
+      <div class="hint-row">
+        <span>Show hints on page</span>
+        <label class="switch">
+          <input type="checkbox" id="hintsToggle" />
+          <span class="slider"></span>
+        </label>
+        <span id="hintCount"></span>
+      </div>
+
+      <div class="typed-row">
+        <input id="typed" type="text" placeholder="Type a command (no mic)…" />
+        <button id="typedSend">Send</button>
+      </div>
+
+      <div class="hint">Keep this popup open while speaking — it hosts the microphone.</div>
+    </main>
+    <footer>
+      <span id="cfgStatus">…</span>
+      <span id="stats">…</span>
+      <span id="errLine" class="err"></span>
+    </footer>
+    <script src="popup.js"></script>
+  </body>
+</html>

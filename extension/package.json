@@ -1,0 +1,11 @@
+{
+  "name": "voice-browser-extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Chrome extension: control the current tab by voice. Jev (TypeSafe System One) decides intent/target; numbered hints pick elements. Configurable decision endpoint.",
+  "scripts": {
+    "test": "node --test \"test/unit/**/*.test.js\""
+  },
+  "license": "MIT"
+}

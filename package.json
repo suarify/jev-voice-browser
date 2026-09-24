@@ -11,9 +11,10 @@
     "start": "node src/server.js",
     "demo": "node scripts/demo.js",
     "demo:ci": "node scripts/demo.js --headless",
-    "test": "node --test 'test/unit/**/*.test.js'",
-    "test:integration": "node --test 'test/integration/**/*.test.js'",
-    "test:all": "node --test 'test/unit/**/*.test.js' 'test/integration/**/*.test.js'"
+    "test": "node --test \"test/unit/**/*.test.js\"",
+    "test:ext": "node --test \"extension/test/unit/**/*.test.js\"",
+    "test:integration": "node --test \"test/integration/**/*.test.js\"",
+    "test:all": "node --test \"test/unit/**/*.test.js\" \"test/integration/**/*.test.js\""
   },
   "dependencies": {
     "@typesafe-ai/sdk": "^0.6.0",

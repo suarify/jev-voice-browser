@@ -1,5 +1,9 @@
 # voice-browser — talk to a real browser, it acts before you finish the sentence
 
+> **Chrome extension?** There's also an MV3 extension in [`extension/`](extension/README.md) that
+> controls the tab you're already in (no separate window), with a configurable Jev endpoint.
+> This README covers the original Node server + Playwright app below.
+
 A Node app that controls a **headed Chromium window** (Playwright) by voice. Speech is streamed
 word by word from the browser's Web Speech API to a small Node server; on every partial transcript
 the server asks **Jev** (TypeSafe's System One model, `jev-1.13.0`) one request with a dozen typed
