@@ -30,6 +30,22 @@
   const send = (msg) => chrome.runtime.sendMessage(msg).catch(() => {});
 
   // ---------------------------------------------------------------------------
+  // Theme (light default: white / teal / navy; optional dark)
+  // ---------------------------------------------------------------------------
+  async function applyTheme() {
+    const { vbxTheme } = await chrome.storage.local.get("vbxTheme");
+    const dark = vbxTheme === "dark";
+    document.documentElement.classList.toggle("dark", dark);
+    $("themeBtn").textContent = dark ? "☀️" : "🌙";
+  }
+  $("themeBtn").addEventListener("click", async () => {
+    const dark = !document.documentElement.classList.contains("dark");
+    await chrome.storage.local.set({ vbxTheme: dark ? "dark" : "light" });
+    applyTheme();
+  });
+  applyTheme();
+
+  // ---------------------------------------------------------------------------
   // Microphone
   // ---------------------------------------------------------------------------
   function startMic() {

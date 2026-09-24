@@ -134,6 +134,28 @@ const score = (instructions, criteria) => ({ type: "score", instructions, criter
 
 const stripTrailingSlashes = (url) => String(url || "").replace(/\/+$/, "");
 
+export const DEFAULT_BASE_URL = "https://api.typesafe.ai";
+export const SYSTEM_ONE_PATH = "/v1/systemone";
+
+/**
+ * Resolve the value the user typed in the options page into the actual URL to POST to.
+ *
+ * Two accepted forms (so people can plug in anything besides the stock Jev endpoint):
+ *   - a base URL  -> `https://api.typesafe.ai`            becomes `…/v1/systemone`
+ *   - a full URL  -> `http://localhost:8787/decide`       used verbatim
+ */
+export function resolveEndpoint(baseUrl) {
+  const u = stripTrailingSlashes(baseUrl || "").trim();
+  if (!u) return `${DEFAULT_BASE_URL}${SYSTEM_ONE_PATH}`;
+  try {
+    const url = new URL(u);
+    const hasPath = url.pathname && url.pathname !== "/";
+    return hasPath ? u : `${u}${SYSTEM_ONE_PATH}`;
+  } catch {
+    return `${u}${SYSTEM_ONE_PATH}`;
+  }
+}
+
 /**
  * Ask Jev (or a compatible endpoint). Resolves to { answers, latencyMs, usage, costUsd, model,
  * requestId, candidates, state, questionCount } or rejects with an AbortError when `signal`
@@ -144,19 +166,19 @@ const stripTrailingSlashes = (url) => String(url || "").replace(/\/+$/, "");
  * @param {{signal?: AbortSignal}} opts
  */
 export async function decide(input, config = {}, { signal } = {}) {
-  const baseUrl = stripTrailingSlashes(config.baseUrl || "https://api.typesafe.ai");
   const apiKey = config.apiKey;
   const model = config.model || DEFAULT_MODEL;
   if (!apiKey) {
-    throw new Error("No API key configured. Open the extension options and paste a TypeSafe API key, or point the base URL at a local proxy.");
+    throw new Error("No API key configured. Open the extension options and paste a TypeSafe API key, or point the endpoint at a local proxy that doesn't need one.");
   }
 
+  const endpoint = resolveEndpoint(config.baseUrl);
   const { state, questions, candidates } = buildRequest(input);
   const t0 = performance.now();
 
   let res;
   try {
-    res = await fetch(`${baseUrl}/v1/systemone`, {
+    res = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -168,7 +190,7 @@ export async function decide(input, config = {}, { signal } = {}) {
     });
   } catch (err) {
     if (err?.name === "AbortError") throw err;
-    throw new Error(`Could not reach ${baseUrl}: ${err?.message || err}`);
+    throw new Error(`Could not reach ${endpoint}: ${err?.message || err}`);
   }
 
   if (!res.ok) {

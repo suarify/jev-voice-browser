@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Voice Browser — speak to the page",
-  "version": "0.1.0",
-  "description": "Control the current tab by voice. Jev (TypeSafe System One) decides intent and target; numbered hints pick elements. Works with any compatible Jev endpoint (TypeSafe or a localhost proxy).",
+  "name": "Suarify Voice Browser",
+  "version": "0.2.0",
+  "description": "Control the current tab by voice. Jev (TypeSafe System One) — or your own decision endpoint — decides intent and target; numbered hints pick elements.",
   "permissions": ["storage", "tabs"],
   "host_permissions": ["<all_urls>"],
   "background": {
@@ -11,9 +11,21 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Voice Browser"
+    "default_title": "Suarify Voice Browser",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
   "options_page": "options.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],

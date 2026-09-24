@@ -1,9 +1,12 @@
-# voice-browser — Chrome extension
+# Suarify Voice Browser — Chrome extension
 
 Speak to control **the tab you're already in**. This is the extension port of the Node server
 app in the repo root. Same Jev (TypeSafe System One) decision engine, same policy gates — but
 instead of a server driving a separate Playwright Chromium, a **manifest-v3 extension** controls
 your current tab directly.
+
+UI: white background, teal brand text, navy secondary, with a subtle gradient — plus a
+🌙 dark-mode toggle (persisted per install).
 
 Borrowed from the two reference projects you pointed me at:
 
@@ -32,10 +35,12 @@ is shared verbatim — `extension/lib/*` are ports of `src/constants.js`, `src/s
 The decision endpoint is **configurable** in the options page:
 
 - Default `https://api.typesafe.ai` (real Jev, needs a TypeSafe API key — `https://console.typesafe.ai/keys`)
-- Or any compatible base URL, e.g. `http://localhost:8787` — plug in the repo's own `src/server.js`
-  or a self-hosted decision server to test without spending credits.
+- Or **your own endpoint**, in either form:
+  - a base URL (`http://localhost:8787`) → `/v1/systemone` is appended automatically
+  - a full URL (`http://localhost:8787/decide`) → used verbatim — plug in the repo's own
+    `src/server.js`, a self-hosted decision server, or any compatible reimplementation.
 
-The service worker speaks the same wire protocol as the Node SDK: `POST {baseUrl}/v1/systemone`
+The service worker speaks the same wire protocol as the Node SDK: `POST {endpoint}`
 with `Authorization: Bearer <key>` and body `{state, questions, model}` — so any endpoint that
 accepts that works.
 
@@ -70,7 +75,7 @@ the same `is_command / intent / complete / target / destructive` reason table li
 ## Tests
 
 ```bash
-npm run test:ext     # 39 unit tests: spans, snapshot, policy, context — no network
+npm run test:ext     # 42 unit tests: spans, snapshot, policy, context, endpoint — no network
 ```
 
 ## Limitations

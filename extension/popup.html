@@ -2,98 +2,146 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Voice Browser</title>
+    <title>Suarify Voice Browser</title>
     <style>
       :root {
-        --bg: #0f172a;
-        --panel: #1e293b;
-        --panel2: #334155;
-        --text: #f1f5f9;
-        --muted: #94a3b8;
-        --accent: #2563eb;
-        --green: #059669;
-        --amber: #f59e0b;
-        --red: #ef4444;
+        --bg0: #ffffff;
+        --bg1: #f2fbfa;
+        --bg2: #eaf4fb;
+        --card: #ffffff;
+        --card-border: rgba(21, 58, 92, 0.10);
+        --text: #0d5f59;        /* teal body text */
+        --brand: #0d9488;       /* teal */
+        --brand-2: #14b8a6;
+        --navy: #1e3a5f;        /* secondary brand */
+        --navy-2: #16304e;
+        --muted: #5f6f7e;
+        --danger: #dc2626;
+        --warn: #b45309;
+        --shadow: 0 1px 3px rgba(21, 58, 92, 0.08);
+      }
+      html.dark {
+        --bg0: #0c1524;
+        --bg1: #0a1d2b;
+        --bg2: #101f30;
+        --card: #13203a;
+        --card-border: rgba(94, 234, 212, 0.12);
+        --text: #8fe9dc;
+        --brand: #14b8a6;
+        --brand-2: #2dd4bf;
+        --navy: #3b6ea5;
+        --navy-2: #4c7fbf;
+        --muted: #8394aa;
+        --danger: #f87171;
+        --warn: #f59e0b;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
       }
       * { box-sizing: border-box; }
       body {
-        width: 340px;
+        width: 344px;
         margin: 0;
         font: 13px/1.4 -apple-system, Segoe UI, Inter, sans-serif;
-        background: var(--bg);
+        background: linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 55%, var(--bg2) 100%);
         color: var(--text);
       }
       header {
         display: flex; align-items: center; gap: 8px;
-        padding: 10px 12px; border-bottom: 1px solid var(--panel2);
+        padding: 10px 12px; border-bottom: 1px solid var(--card-border);
+        background: var(--bg0);
       }
-      header .logo { font-weight: 700; font-size: 14px; }
-      header .logo span { color: var(--accent); }
+      header img.logo { width: 26px; height: 26px; border-radius: 7px; }
+      header .logo {
+        font-weight: 800; font-size: 14px;
+        background: linear-gradient(100deg, var(--brand) 10%, var(--navy) 90%);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
       .pill {
         margin-left: auto; padding: 2px 9px; border-radius: 999px;
-        font-size: 11px; font-weight: 600; background: var(--panel2); color: var(--muted);
+        font-size: 11px; font-weight: 700; background: rgba(13, 148, 136, 0.10); color: var(--brand);
       }
-      .pill.listening { background: var(--green); color: #fff; }
-      .pill.thinking { background: var(--amber); color: #111; }
-      .pill.error { background: var(--red); color: #fff; }
-      .gear { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 15px; padding: 2px 4px; }
-      .gear:hover { color: var(--text); }
+      .pill.listening { background: var(--brand); color: #fff; }
+      .pill.thinking { background: var(--warn); color: #fff; }
+      .pill.error { background: var(--danger); color: #fff; }
+      .iconbtn {
+        background: none; border: 0; cursor: pointer; font-size: 15px;
+        color: var(--navy); padding: 2px 4px; border-radius: 6px;
+      }
+      .iconbtn:hover { background: rgba(13, 148, 136, 0.10); }
       main { padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; }
       .mic-row { display: flex; gap: 8px; align-items: center; }
       #micBtn {
         flex: 1; padding: 10px; border: 0; border-radius: 10px;
-        font-size: 14px; font-weight: 700; cursor: pointer; background: var(--accent); color: #fff;
+        font-size: 14px; font-weight: 800; cursor: pointer; color: #fff;
+        background: linear-gradient(120deg, var(--brand) 0%, var(--navy) 130%);
+        box-shadow: var(--shadow);
       }
-      #micBtn.listening { background: var(--red); }
-      .card { background: var(--panel); border-radius: 10px; padding: 8px 10px; }
+      #micBtn:hover { filter: brightness(1.05); }
+      #micBtn.listening { background: var(--danger); }
+      .card {
+        background: var(--card); border: 1px solid var(--card-border);
+        border-radius: 10px; padding: 8px 10px; box-shadow: var(--shadow);
+      }
       .card h3 { margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
       #transcript { font-size: 14px; min-height: 20px; }
       #decision { font-size: 13px; }
-      #decision .sum { font-weight: 600; }
-      #decision.ok { color: var(--green); }
-      #decision.wait { color: var(--amber); }
+      #decision .sum { font-weight: 700; }
+      #decision.ok { color: var(--brand); }
+      #decision.wait { color: var(--warn); }
       #decision.ignore { color: var(--muted); }
-      #decision.confirm { color: var(--red); }
-      #decision.err { color: var(--red); }
+      #decision.confirm { color: var(--danger); }
+      #decision.err { color: var(--danger); }
       .gates { margin-top: 6px; display: flex; flex-direction: column; gap: 2px; }
       .gate { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
-      .gate b { color: var(--text); font-weight: 600; }
-      .gate .pass { color: var(--green); }
-      .gate .fail { color: var(--red); }
-      #pending { background: var(--red); color: #fff; border-radius: 10px; padding: 8px 10px; font-weight: 600; }
+      .gate b { color: var(--navy); font-weight: 700; }
+      .gate .pass { color: var(--brand); }
+      .gate .fail { color: var(--danger); }
+      #pending { background: linear-gradient(120deg, var(--danger), #b91c1c); color: #fff; border-radius: 10px; padding: 8px 10px; font-weight: 700; }
       #cands { display: flex; flex-direction: column; gap: 4px; }
       .cand { display: flex; align-items: center; gap: 8px; font-size: 12px; }
       .cand .n {
         min-width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center;
-        background: var(--accent); color: #fff; border-radius: 999px; font-weight: 700; font-size: 12px;
+        background: linear-gradient(120deg, var(--brand), var(--navy)); color: #fff;
+        border-radius: 999px; font-weight: 800; font-size: 12px;
       }
       .hint-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
-      .switch { position: relative; width: 34px; height: 18px; }
+      .switch { position: relative; width: 34px; height: 18px; flex: none; }
       .switch input { opacity: 0; width: 0; height: 0; }
       .slider {
-        position: absolute; inset: 0; border-radius: 999px; background: var(--panel2);
+        position: absolute; inset: 0; border-radius: 999px; background: rgba(13, 148, 136, 0.25);
         transition: .15s; cursor: pointer;
       }
       .slider::before {
         content: ""; position: absolute; width: 14px; height: 14px; border-radius: 50%;
         left: 2px; top: 2px; background: #fff; transition: .15s;
       }
-      .switch input:checked + .slider { background: var(--green); }
+      .switch input:checked + .slider { background: linear-gradient(120deg, var(--brand), var(--navy)); }
       .switch input:checked + .slider::before { transform: translateX(16px); }
       .typed-row { display: flex; gap: 6px; }
-      #typed { flex: 1; padding: 7px 9px; border-radius: 8px; border: 1px solid var(--panel2); background: var(--panel); color: var(--text); font-size: 13px; }
-      #typed:focus { outline: 2px solid var(--accent); }
-      #typedSend { padding: 7px 12px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; font-weight: 600; }
-      footer { padding: 8px 12px; border-top: 1px solid var(--panel2); color: var(--muted); font-size: 11px; display: flex; flex-wrap: wrap; gap: 4px 12px; }
-      footer .err { color: var(--red); width: 100%; }
+      #typed {
+        flex: 1; padding: 7px 9px; border-radius: 8px; border: 1px solid var(--card-border);
+        background: var(--card); color: var(--text); font-size: 13px;
+      }
+      #typed:focus { outline: 2px solid var(--brand); }
+      #typedSend {
+        padding: 7px 12px; border: 0; border-radius: 8px; color: #fff; cursor: pointer; font-weight: 700;
+        background: linear-gradient(120deg, var(--brand), var(--navy));
+      }
+      footer {
+        padding: 8px 12px; border-top: 1px solid var(--card-border);
+        background: var(--bg0); color: var(--muted); font-size: 11px;
+        display: flex; flex-wrap: wrap; gap: 4px 12px;
+      }
+      footer .err { color: var(--danger); width: 100%; }
       .hint { font-size: 11px; color: var(--muted); }
     </style>
   </head>
   <body>
     <header>
-      <div class="logo">Voice <span>Browser</span></div>
+      <img class="logo" src="suarifybrowser.png" alt="" />
+      <span class="logo">Suarify Voice Browser</span>
       <div id="statusPill" class="pill">idle</div>
-      <button id="settingsBtn" class="gear" title="Settings">⚙</button>
+      <button id="themeBtn" class="iconbtn" title="Toggle dark mode">🌙</button>
+      <button id="settingsBtn" class="iconbtn" title="Settings">⚙</button>
     </header>
     <main>
       <div class="mic-row">

@@ -1,7 +1,6 @@
 /**
- * options.js — config: base URL (TypeSafe default or any compatible endpoint),
- * API key, model, and "show hints" default. Stored locally; the service worker
- * re-reads it on save and re-applies the hint mode to the current tab.
+ * options.js — config: decision endpoint (TypeSafe base URL OR a full custom endpoint),
+ * API key, model, and "show hints" default. Also the dark-mode toggle.
  */
 (() => {
   const $ = (id) => document.getElementById(id);
@@ -19,13 +18,36 @@
     statusEl.className = ok ? "ok" : "err";
   }
 
+  // Same resolution rule as lib/jev.js (kept tiny so the options page can preview it).
+  const SYSTEM_ONE_PATH = "/v1/systemone";
+  function resolveEndpoint(baseUrl) {
+    const u = String(baseUrl || "").trim().replace(/\/+$/, "");
+    if (!u) return `https://api.typesafe.ai${SYSTEM_ONE_PATH}`;
+    try {
+      const url = new URL(u);
+      const hasPath = url.pathname && url.pathname !== "/";
+      return hasPath ? u : `${u}${SYSTEM_ONE_PATH}`;
+    } catch {
+      return `${u}${SYSTEM_ONE_PATH}`;
+    }
+  }
+
+  function updateHint() {
+    $("endpointHint").textContent = `→ will POST ${resolveEndpoint($("baseUrl").value)}`;
+  }
+  $("baseUrl").addEventListener("input", updateHint);
+
   async function load() {
-    const { vbxConfig } = await chrome.storage.local.get("vbxConfig");
+    const { vbxConfig, vbxTheme } = await chrome.storage.local.get(["vbxConfig", "vbxTheme"]);
     const c = { ...DEFAULT, ...(vbxConfig || {}) };
     $("baseUrl").value = c.baseUrl;
     $("apiKey").value = c.apiKey;
     $("model").value = c.model;
     $("showHints").checked = Boolean(c.showHints);
+    updateHint();
+    const dark = vbxTheme === "dark";
+    document.documentElement.classList.toggle("dark", dark);
+    $("themeBtn").textContent = dark ? "☀️" : "🌙";
   }
 
   function readForm() {
@@ -46,27 +68,33 @@
 
   $("saveBtn").addEventListener("click", save);
 
-  $("testBtn").addEventListener("click", async () => {
-    const c = readForm();
-    setStatus("Testing…", true);
-    try {
-      const base = c.baseUrl.replace(/\/+$/, "");
-      const res = await fetch(`${base}/v1/models`, {
-        headers: c.apiKey ? { Authorization: `Bearer ${c.apiKey}` } : {},
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const names = (data.models || []).map((m) => m.id || m.name || m).join(", ");
-      setStatus(`✓ Connected to ${base}. Models: ${names || "ok"}`, true);
-    } catch (err) {
-      setStatus(`✗ ${baseFailed(err)}`, false);
-    }
+  $("themeBtn").addEventListener("click", async () => {
+    const dark = !document.documentElement.classList.contains("dark");
+    await chrome.storage.local.set({ vbxTheme: dark ? "dark" : "light" });
+    document.documentElement.classList.toggle("dark", dark);
+    $("themeBtn").textContent = dark ? "☀️" : "🌙";
   });
 
-  function baseFailed(err) {
-    if (err instanceof TypeError) return `Could not reach the server (CORS or offline): ${err.message}`;
-    return err.message || String(err);
-  }
+  $("testBtn").addEventListener("click", async () => {
+    const c = readForm();
+    const endpoint = resolveEndpoint(c.baseUrl);
+    setStatus("Testing…", true);
+    try {
+      const res = await fetch(endpoint, {
+        method: "GET",
+        headers: c.apiKey ? { Authorization: `Bearer ${c.apiKey}` } : {},
+      });
+      if (res.status === 401 || res.status === 403) {
+        setStatus(`✓ Server reachable (HTTP ${res.status} — check the API key)`, true);
+      } else if (res.status >= 400) {
+        setStatus(`✓ Server reachable (HTTP ${res.status} — this endpoint expects POST)`, true);
+      } else {
+        setStatus(`✓ Connected (HTTP ${res.status})`, true);
+      }
+    } catch (err) {
+      setStatus(`✗ Cannot reach ${endpoint}: ${err instanceof TypeError ? "offline or CORS blocked" : err.message}`, false);
+    }
+  });
 
   load();
 })();

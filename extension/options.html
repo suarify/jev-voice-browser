@@ -2,64 +2,95 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Voice Browser — Settings</title>
+    <title>Suarify Voice Browser — Settings</title>
     <style>
       :root {
-        --bg: #0f172a; --panel: #1e293b; --panel2: #334155; --text: #f1f5f9; --muted: #94a3b8;
-        --accent: #2563eb; --green: #059669; --red: #ef4444;
+        --bg0: #ffffff; --bg1: #f2fbfa; --bg2: #eaf4fb;
+        --card: #ffffff; --card-border: rgba(21, 58, 92, 0.10);
+        --text: #0d5f59; --brand: #0d9488; --brand-2: #14b8a6;
+        --navy: #1e3a5f; --navy-2: #16304e; --muted: #5f6f7e;
+        --danger: #dc2626; --shadow: 0 1px 3px rgba(21, 58, 92, 0.08);
+      }
+      html.dark {
+        --bg0: #0c1524; --bg1: #0a1d2b; --bg2: #101f30;
+        --card: #13203a; --card-border: rgba(94, 234, 212, 0.12);
+        --text: #8fe9dc; --brand: #14b8a6; --brand-2: #2dd4bf;
+        --navy: #3b6ea5; --navy-2: #4c7fbf; --muted: #8394aa;
+        --danger: #f87171; --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
       }
       * { box-sizing: border-box; }
       body {
         margin: 0; font: 14px/1.5 -apple-system, Segoe UI, Inter, sans-serif;
-        background: var(--bg); color: var(--text); padding: 32px; max-width: 640px;
+        padding: 32px; max-width: 640px;
+        background: linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 55%, var(--bg2) 100%);
+        color: var(--text);
       }
-      h1 { font-size: 20px; margin: 0 0 4px; }
-      h1 span { color: var(--accent); }
+      .head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+      .head img.logo { width: 34px; height: 34px; border-radius: 9px; }
+      h1 { font-size: 20px; margin: 0; font-weight: 800; }
+      h1 span {
+        background: linear-gradient(100deg, var(--brand) 10%, var(--navy) 90%);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+      .head .iconbtn {
+        margin-left: auto; background: none; border: 0; cursor: pointer; font-size: 20px;
+        color: var(--navy); padding: 4px; border-radius: 8px;
+      }
+      .head .iconbtn:hover { background: rgba(13, 148, 136, 0.10); }
       .sub { color: var(--muted); margin: 0 0 24px; }
       label { display: block; margin-bottom: 16px; }
-      label .name { display: block; font-weight: 600; margin-bottom: 4px; }
+      label .name { display: block; font-weight: 700; margin-bottom: 4px; }
       label .desc { display: block; color: var(--muted); font-size: 12px; margin-bottom: 6px; }
       input[type="text"], input[type="password"] {
-        width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid var(--panel2);
-        background: var(--panel); color: var(--text); font-size: 14px;
+        width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid var(--card-border);
+        background: var(--card); color: var(--text); font-size: 14px;
       }
-      input:focus { outline: 2px solid var(--accent); }
+      input:focus { outline: 2px solid var(--brand); }
+      .hintline { font-size: 12px; color: var(--brand); margin-top: 5px; min-height: 16px; font-weight: 600; }
       .row { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; }
-      .row button {
-        padding: 9px 14px; border: 0; border-radius: 8px; background: var(--accent);
-        color: #fff; font-weight: 600; cursor: pointer; font-size: 13px;
+      .row button, .save-row button {
+        padding: 9px 14px; border: 0; border-radius: 8px; color: #fff; font-weight: 700;
+        cursor: pointer; font-size: 13px;
+        background: linear-gradient(120deg, var(--brand), var(--navy));
       }
-      .row button.ghost { background: var(--panel2); }
+      .row button.ghost { background: var(--navy); }
       #status { font-size: 13px; margin-top: 4px; min-height: 18px; }
-      #status.ok { color: var(--green); }
-      #status.err { color: var(--red); }
-      details { background: var(--panel); border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; color: var(--muted); font-size: 13px; }
-      details summary { cursor: pointer; color: var(--text); font-weight: 600; }
+      #status.ok { color: var(--brand); }
+      #status.err { color: var(--danger); }
+      details { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; color: var(--muted); font-size: 13px; box-shadow: var(--shadow); }
+      details summary { cursor: pointer; color: var(--text); font-weight: 700; }
+      details code { color: var(--brand); }
       .save-row { display: flex; gap: 10px; align-items: center; }
       #saveBtn { padding: 11px 18px; font-size: 14px; }
-      #saved { color: var(--green); font-weight: 600; opacity: 0; transition: opacity .3s; }
+      #saved { color: var(--brand); font-weight: 700; opacity: 0; transition: opacity .3s; }
       #saved.show { opacity: 1; }
     </style>
   </head>
   <body>
-    <h1>Voice <span>Browser</span> — Settings</h1>
-    <p class="sub">The extension sends your spoken transcript + a page snapshot to a Jev decision engine. Point it at TypeSafe, or at any compatible endpoint (e.g. a localhost proxy) for testing.</p>
+    <div class="head">
+      <img class="logo" src="suarifybrowser.png" alt="" />
+      <h1>Suarify <span>Voice Browser</span></h1>
+      <button id="themeBtn" class="iconbtn" title="Toggle dark mode">🌙</button>
+    </div>
+    <p class="sub">Speak to control the tab you're in. The extension sends your transcript + a page snapshot to a
+    decision endpoint — TypeSafe Jev by default, or any compatible server you plug in.</p>
 
     <label>
-      <span class="name">API base URL</span>
-      <span class="desc">Defaults to the TypeSafe API. Use a custom URL to plug in a local proxy or your own decision server (e.g. http://localhost:8787).</span>
+      <span class="name">Decision endpoint</span>
+      <span class="desc">Either a base URL (TypeSafe Jev is the default) or your <b>own full endpoint</b>, e.g. <code>http://localhost:8787/decide</code> — anything that accepts <code>POST {state, questions, model}</code>.</span>
       <input type="text" id="baseUrl" placeholder="https://api.typesafe.ai" />
+      <div class="hintline" id="endpointHint"></div>
     </label>
 
     <label>
       <span class="name">API key</span>
-      <span class="desc">Only stored locally in this extension and only sent in the Authorization header of requests to the base URL above.</span>
+      <span class="desc">Only stored locally and only sent in the Authorization header to the endpoint above. Leave blank if your endpoint doesn't need one.</span>
       <input type="password" id="apiKey" placeholder="ts_…" autocomplete="off" />
     </label>
 
     <label>
       <span class="name">Model</span>
-      <span class="desc">Jev model alias used for decisions.</span>
+      <span class="desc">Model alias sent with each request (Jev default: <code>jev-1.13.0</code>).</span>
       <input type="text" id="model" placeholder="jev-1.13.0" />
     </label>
 
@@ -74,11 +105,11 @@
     </div>
 
     <details>
-      <summary>Why a configurable base URL?</summary>
-      <p>The original server app called the TypeSafe SDK from Node. The extension uses the same wire protocol
-      (<code>POST {baseUrl}/v1/systemone</code> with a Bearer key) but from a service worker, so the endpoint can
-      be swapped. Use <code>https://api.typesafe.ai</code> for the real Jev model, or point at a local reimplementation
-      for free testing.</p>
+      <summary>Why a configurable endpoint?</summary>
+      <p>The original server app called the TypeSafe SDK from Node. The extension speaks the same wire protocol
+      (<code>POST {endpoint}</code> with a Bearer key) from a service worker, so the endpoint is swappable: keep
+      <code>https://api.typesafe.ai</code> for real Jev, or point at a local proxy / your own decision server for
+      free testing. A bare base URL gets <code>/v1/systemone</code> appended; a URL with a path is used verbatim.</p>
     </details>
 
     <div class="row">
