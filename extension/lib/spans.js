@@ -20,13 +20,20 @@ const TEXT_VERBS = [
   /\bwrite\s+/i,
   /\bput\s+/i,
   /\bfill\s+(?:in\s+)?/i,
+  // Bahasa Melayu: cari/gelintar=search, gugel=google, taip/taipkan/masukkan=type, tulis=write, letak/isi=put/fill
+  /\b(?:cari|gelintar)\s+(?:di\s+|pada\s+)?(?:google|youtube|wikipedia|github|amazon|reddit|twitter|x|hacker news|web)\s+(?:untuk\s+|tentang\s+)?/i,
+  /\b(?:cari|gelintar|gugel)\s+(?:untuk\s+|tentang\s+)?/i,
+  /\b(?:taip|taipkan|masukkan|tulis|letak|isi)\s+(?:dalam\s+)?/i,
 ];
 
+// Trailing destination phrases to strip from a payload: English "... into the search box"
+// and Malay "... dalam kotak carian" (dalam=in/into, ke dalam=into, kotak/ruang=box, carian=search).
 const TRAILING_DEST_RE =
-  /\s+(?:in|into|on|inside|to)\s+(?:the\s+)?(?:[\w-]+\s+){0,4}?(?:box|field|input|bar|form|textarea|search|wikipedia|youtube|google|duckduckgo|github|amazon|reddit|twitter|x|web)\b.*$/i;
+  /\s+(?:in|into|on|inside|to|ke dalam|dalam)\s+(?:the\s+)?(?:[\w-]+\s+){0,4}?(?:box|field|input|bar|form|textarea|search|kotak|ruang|medan|carian|wikipedia|youtube|google|duckduckgo|github|amazon|reddit|twitter|x|web)\b.*$/i;
 
+// Leading site phrases: "wikipedia for cats" -> "cats", "youtube untuk lofi" -> "lofi"
 const LEADING_SITE_RE =
-  /^(?:on\s+|in\s+)?(?:google|duckduckgo|wikipedia|youtube|github|amazon|reddit|twitter|x|hacker news|the web)\s+(?:for\s+)?/i;
+  /^(?:on\s+|in\s+|di\s+)?(?:google|duckduckgo|wikipedia|youtube|github|amazon|reddit|twitter|x|hacker news|the web)\s+(?:for\s+|untuk\s+)/i;
 
 export function cleanTranscript(text) {
   return String(text || "")
@@ -75,9 +82,11 @@ export function extractTextCandidates(transcript) {
   return out.slice(0, 8);
 }
 
+/** "example dot com" -> "example.com"; also lowercases and strips spaces around dots. Malay: "titik" = dot. */
 export function normalizeSpokenUrl(text) {
   return String(text || "")
     .toLowerCase()
+    .replace(/\s+titik\s+/g, ".")
     .replace(/\s+dot\s+/g, ".")
     .replace(/\s*\.\s*/g, ".")
     .replace(/\s+slash\s+/g, "/")
@@ -109,6 +118,12 @@ const NUMBER_WORDS = {
   three: 3, third: 3, "3": 3, "3rd": 3,
   four: 4, fourth: 4, "4": 4, "4th": 4,
   five: 5, fifth: 5, "5": 5, "5th": 5,
+  // Bahasa Melayu: satu=1, dua=2, tiga=3, empat=4, lima=5; pertama/kedua/ketiga/keempat/kelima = ordinals
+  satu: 1, pertama: 1,
+  dua: 2, kedua: 2,
+  tiga: 3, ketiga: 3,
+  empat: 4, keempat: 4,
+  lima: 5, kelima: 5,
 };
 const NUMBER_HOMOPHONES = { won: 1, to: 2, too: 2, for: 4 };
 

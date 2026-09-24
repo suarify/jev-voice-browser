@@ -21,7 +21,7 @@ import { evaluatePolicy, describe } from "./lib/policy.js";
 import { buildSnapshot, approxTokens } from "./lib/snapshot.js";
 import { parseCandidatePick, cleanTranscript } from "./lib/spans.js";
 
-const DEFAULT_CONFIG = { baseUrl: "https://api.typesafe.ai", apiKey: "", model: DEFAULT_MODEL, showHints: false };
+const DEFAULT_CONFIG = { baseUrl: "https://api.typesafe.ai", apiKey: "", model: DEFAULT_MODEL, showHints: false, lang: "auto" };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const avg = (xs) => (xs.length ? Math.round(xs.reduce((a, b) => a + b, 0) / xs.length) : null);
 
@@ -121,6 +121,7 @@ function pushState() {
       model: config.model,
       hasKey: Boolean(config.apiKey),
       showHints: config.showHints,
+      lang: config.lang,
     },
     state: "idle",
     thresholds: T,
@@ -550,6 +551,7 @@ function buildUiState() {
       model: config.model,
       hasKey: Boolean(config.apiKey),
       showHints: config.showHints,
+      lang: config.lang,
     },
     state: "idle",
     thresholds: T,

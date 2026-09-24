@@ -65,6 +65,27 @@ say "confirm"). Numbered overlays appear when the target is ambiguous — say th
 **Show hints on page** on, every clickable element is numbered (click-by-voice style) and a bare
 number clicks it directly, no model call.
 
+### Bahasa Melayu
+
+Set **Voice language** to `ms` (options page) for the `ms-MY` recognizer, then speak Malay.
+The decision prompts carry Malay examples, the payload extractor understands Malay verbs, and
+spoken URLs/numbers work too:
+
+| Cakap | Apa jadi |
+| --- | --- |
+| "pergi ke wikipedia" / "buka youtube" / "buka contoh titik com" | navigates (titik = dot) |
+| "cari alan turing" / "cari di youtube untuk lofi" | searches (payload copied verbatim) |
+| "klik keputusan pertama" / "tekan pautan" | clicks the element Jev picked |
+| "taip hello dalam kotak carian" | types verbatim |
+| "tatal ke bawah" / "tatal ke atas" | scroll |
+| "kembali" / "ke hadapan" / "muat semula" | history |
+| "buka tab baru" / "tutup tab ini" / "tab seterusnya" | tabs |
+| "sahkan" / "batal" | confirm / cancel a destructive action |
+| "dua" / "yang kedua" / "tiga" | pick numbered overlay (satu…lima) |
+
+English and Malay can be mixed in one session; the recognizer language is the main lever for
+accuracy, so pick whichever you speak.
+
 ## How a decision is made
 
 Every transcript update produces exactly one Jev request (see `lib/jev.js`). The state carries

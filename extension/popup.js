@@ -57,7 +57,9 @@
     recognition = new SR();
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = navigator.language || "en-US";
+    // Voice language from options: ms → Malay, en → English, auto → browser default.
+    const lang = state?.configStatus?.lang || "auto";
+    recognition.lang = lang === "ms" ? "ms-MY" : lang === "en" ? "en-US" : navigator.language || "en-US";
     recognition.maxAlternatives = 1;
 
     recognition.onresult = (e) => {

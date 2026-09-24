@@ -4,7 +4,7 @@
  */
 (() => {
   const $ = (id) => document.getElementById(id);
-  const DEFAULT = { baseUrl: "https://api.typesafe.ai", apiKey: "", model: "jev-1.13.0", showHints: false };
+  const DEFAULT = { baseUrl: "https://api.typesafe.ai", apiKey: "", model: "jev-1.13.0", showHints: false, lang: "auto" };
   const savedEl = $("saved");
   const statusEl = $("status");
 
@@ -43,6 +43,7 @@
     $("baseUrl").value = c.baseUrl;
     $("apiKey").value = c.apiKey;
     $("model").value = c.model;
+    $("lang").value = c.lang || "auto";
     $("showHints").checked = Boolean(c.showHints);
     updateHint();
     const dark = vbxTheme === "dark";
@@ -55,6 +56,7 @@
       baseUrl: ($("baseUrl").value || DEFAULT.baseUrl).trim(),
       apiKey: $("apiKey").value.trim(),
       model: ($("model").value || DEFAULT.model).trim(),
+      lang: ($("lang").value || "auto").trim().toLowerCase(),
       showHints: $("showHints").checked,
     };
   }

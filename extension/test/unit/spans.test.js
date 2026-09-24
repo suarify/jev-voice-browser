@@ -56,3 +56,21 @@ test("candidate pick parsing", () => {
   assert.equal(parseCandidatePick("go to wikipedia"), null);
   assert.equal(parseCandidatePick(""), null);
 });
+
+test("Bahasa Melayu: text candidates", () => {
+  assert.equal(extractTextCandidates("cari alan turing")[0], "alan turing");
+  assert.equal(extractTextCandidates("cari youtube untuk lofi")[0], "lofi");
+  assert.equal(extractTextCandidates("taip hello dalam kotak carian")[0], "hello");
+  assert.equal(extractTextCandidates("masukkan email saya dalam ruang")[0], "email saya");
+});
+
+test("Bahasa Melayu: spoken URLs (titik = dot)", () => {
+  assert.equal(normalizeSpokenUrl("buka contoh titik com"), "buka contoh.com");
+  assert.deepEqual(extractUrlCandidates("buka contoh titik com"), ["contoh.com"]);
+});
+
+test("Bahasa Melayu: candidate numbers (satu/dua/tiga)", () => {
+  assert.equal(parseCandidatePick("dua"), 2);
+  assert.equal(parseCandidatePick("tiga"), 3);
+  assert.equal(parseCandidatePick("yang kedua"), 2);
+});

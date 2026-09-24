@@ -94,6 +94,17 @@
       <input type="text" id="model" placeholder="jev-1.13.0" />
     </label>
 
+    <label>
+      <span class="name">Voice language</span>
+      <span class="desc">Language used by the speech recognizer. Bahasa Melayu and English are tuned; restart the mic after changing.</span>
+      <input type="text" id="lang" list="langs" placeholder="auto" />
+      <datalist id="langs">
+        <option value="auto">auto — browser default</option>
+        <option value="ms">ms — Bahasa Melayu (ms-MY)</option>
+        <option value="en">en — English (en-US)</option>
+      </datalist>
+    </label>
+
     <div class="row">
       <label style="margin:0; display:flex; align-items:center; gap:8px;">
         <input type="checkbox" id="showHints" style="width:16px;height:16px;" />

@@ -90,87 +90,87 @@ export const INTENT_CRITERIA = {
   navigate_url: {
     what: "Open a specific website or URL by name (go to / open / visit / take me to <site>)",
     not_for: "Searching for a topic; clicking something already on the page",
-    examples: ["go to wikipedia", "open youtube", "take me to github.com", "visit example dot com"],
+    examples: ["go to wikipedia", "open youtube", "take me to github.com", "visit example dot com", "pergi ke wikipedia", "buka youtube", "buka example dot com"],
   },
   search_web: {
     what: "Search for a topic or phrase (search for / look up / google / find <query>), on the web or on a named site",
     not_for: "Typing into a specific named field without searching; opening a site's homepage",
-    examples: ["search for alan turing", "look up typesafe jev", "google cheap flights", "search wikipedia for cats"],
+    examples: ["search for alan turing", "look up typesafe jev", "google cheap flights", "search wikipedia for cats", "cari alan turing", "google harga telefon", "cari di youtube untuk lofi", "cari wikipedia untuk kucing"],
   },
   click_element: {
     what: "Click / press / open / select / choose a link, button, tab, result or item that is on the current page",
     not_for: "Opening a website by name; typing text",
-    examples: ["click the first result", "click sign in", "open the second link", "press the more information link"],
+    examples: ["click the first result", "click sign in", "open the second link", "press the more information link", "klik keputusan pertama", "tekan pautan ini", "buka tab komen"],
   },
   type_into_field: {
     what: "Type or enter specific text into an input box, search box or text field on the page",
     not_for: "Running a search on a search engine (that is search_web); pressing enter alone",
-    examples: ["type hello world into the search box", "enter my email", "write good morning in the comment box"],
+    examples: ["type hello world into the search box", "enter my email", "write good morning in the comment box", "taip hello dunia dalam kotak carian", "masukkan email saya"],
   },
   select_option: {
     what: "Choose an option from a dropdown / select menu",
     not_for: "Clicking a link or button",
-    examples: ["select english from the language dropdown", "choose the large size"],
+    examples: ["select english from the language dropdown", "choose the large size", "pilih bahasa inggeris", "pilih saiz besar"],
   },
   press_enter: {
     what: "Press the Enter / Return key, or submit what was typed",
     not_for: "Typing text; clicking a named button",
-    examples: ["press enter", "hit enter", "submit"],
+    examples: ["press enter", "hit enter", "submit", "tekan enter", "hantar"],
   },
   scroll_down: {
     what: "Scroll / move down the page",
     not_for: "Scrolling up; navigating",
-    examples: ["scroll down", "scroll down a bit", "go to the bottom", "page down"],
+    examples: ["scroll down", "scroll down a bit", "go to the bottom", "page down", "tatal ke bawah", "skrol ke bawah", "ke bahagian bawah"],
   },
   scroll_up: {
     what: "Scroll / move up the page",
     not_for: "Scrolling down",
-    examples: ["scroll up", "back to the top", "page up"],
+    examples: ["scroll up", "back to the top", "page up", "tatal ke atas"],
   },
   go_back: {
     what: "Go back to the previous page in history (back / go back / undo that / previous page)",
     not_for: "Scrolling up; closing a tab",
-    examples: ["go back", "undo", "back", "previous page"],
+    examples: ["go back", "undo", "back", "previous page", "kembali", "kembali ke halaman sebelumnya"],
   },
   go_forward: {
     what: "Go forward in history",
     not_for: "Scrolling down",
-    examples: ["go forward", "forward"],
+    examples: ["go forward", "forward", "ke hadapan"],
   },
   reload: {
     what: "Reload / refresh the current page",
     not_for: "Navigating elsewhere",
-    examples: ["reload", "refresh the page"],
+    examples: ["reload", "refresh the page", "muat semula", "refresh"],
   },
   open_new_tab: {
     what: "Open a new empty tab",
     not_for: "Opening a website by name in the current tab",
-    examples: ["open a new tab", "new tab"],
+    examples: ["open a new tab", "new tab", "buka tab baru"],
   },
   close_tab: {
     what: "Close the current tab",
     not_for: "Going back",
-    examples: ["close this tab", "close tab"],
+    examples: ["close this tab", "close tab", "tutup tab ini", "tutup tab"],
   },
   switch_tab: {
     what: "Switch to another / the next / the previous tab",
     not_for: "Opening or closing tabs",
-    examples: ["next tab", "switch tab", "go to the other tab"],
+    examples: ["next tab", "switch tab", "go to the other tab", "tab seterusnya", "tukar tab"],
   },
   confirm: {
     what: "Approve a pending action the browser asked to confirm (yes / confirm / do it / go ahead)",
     not_for: "New commands",
-    examples: ["confirm", "yes do it", "go ahead"],
+    examples: ["confirm", "yes do it", "go ahead", "sahkan", "ya", "teruskan"],
   },
   cancel: {
     what: "Cancel / never mind / stop the pending action",
     not_for: "Going back in history",
-    examples: ["cancel", "never mind", "stop"],
+    examples: ["cancel", "never mind", "stop", "batal", "tak jadi"],
   },
   none: {
     what: "Not a browser command, or nothing recognizable yet (fragment, chit-chat, silence, filler)",
     not_for: "Anything that clearly matches another option",
-    examples: ["um", "okay so", "what do you think", "the weather is nice"],
+    examples: ["um", "okay so", "what do you think", "the weather is nice", "macam mana awak", "saya rasa kita patut makan tengah hari"],
   },
 };
 
@@ -195,7 +195,7 @@ export const QUESTIONS = {
     instructions: {
       question: "Which browser action does the user ask for in `transcript`?",
       focus:
-        "Judge the words said so far. If the sentence is unfinished, pick the action the words already commit to; if no action is recognizable pick none. `page` and `elements` describe what is currently on screen. `context.previous_page` and `context.recent_actions` (most recent first) say where the user just came from and what was just done: 'back to the results' after clicking a search result is go_back; 'the other one' or 'not that one' after a click is click_element on a different element.",
+        "The user may speak in English OR Bahasa Melayu (Malay): 'pergi ke'=go to, 'buka'=open, 'cari'=search, 'klik/tekan'=click, 'taip/masukkan'=type, 'tatal'=scroll, 'kembali'=back, 'muat semula'=reload, 'sahkan'=confirm, 'batal'=cancel. Judge the words said so far. If the sentence is unfinished, pick the action the words already commit to; if no action is recognizable pick none. `page` and `elements` describe what is currently on screen. `context.previous_page` and `context.recent_actions` (most recent first) say where the user just came from and what was just done: 'back to the results' after clicking a search result is go_back; 'the other one' or 'not that one' after a click is click_element on a different element.",
     },
     criteria: INTENT_CRITERIA,
   },
