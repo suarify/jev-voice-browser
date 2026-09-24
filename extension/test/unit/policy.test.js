@@ -164,6 +164,17 @@ test("topChoices excludes none and sorts by probability", () => {
   ]);
 });
 
+test("read aloud: acts with a text span, waits without one", () => {
+  const cands = { text: ["hello world"], url: [] };
+  const a = answers({ intent: ch("read_aloud", 0.95), text_span: ch("hello world", 0.9) });
+  const r = evaluatePolicy({ answers: a, candidates: cands, snapshot, isFinal: true });
+  assert.equal(r.decision, "act");
+  assert.equal(r.action.type, "read_aloud");
+  assert.equal(r.action.text, "hello world");
+  const noSpan = answers({ intent: ch("read_aloud", 0.95), text_span: ch("none", 0.9) });
+  assert.equal(evaluatePolicy({ answers: noSpan, candidates, snapshot, isFinal: true }).decision, "wait");
+});
+
 test("free-text intents wait for a final result or silence, even when `complete` is high", () => {
   const cands = { text: ["alan"], url: [] };
   const a = answers({ intent: ch("search_web", 0.99), complete: { noul: 0.95 }, text_span: ch("alan", 0.9) });

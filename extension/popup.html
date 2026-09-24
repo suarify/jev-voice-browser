@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Suarify Voice Browser</title>
+    <title>VoiceBrowser</title>
     <style>
       :root {
         --bg0: #ffffff;
@@ -50,10 +50,10 @@
         background: var(--bg0);
       }
       header img.logo { width: 26px; height: 26px; border-radius: 7px; }
-      header .logo {
-        font-weight: 800; font-size: 14px;
-        background: linear-gradient(100deg, var(--brand) 10%, var(--navy) 90%);
-        -webkit-background-clip: text; background-clip: text; color: transparent;
+      header .vbmark { width: 26px; height: 26px; flex: none; }
+      header .vbname {
+        font-weight: 800; font-size: 14px; color: var(--brand);
+        letter-spacing: -0.01em;
       }
       .pill {
         margin-left: auto; padding: 2px 9px; border-radius: 999px;
@@ -133,12 +133,21 @@
       }
       footer .err { color: var(--danger); width: 100%; }
       .hint { font-size: 11px; color: var(--muted); }
+      .powered {
+        width: 100%; display: flex; align-items: center; gap: 6px;
+        justify-content: center; border-top: 1px solid var(--card-border); padding-top: 6px;
+        color: var(--muted);
+      }
+      .powered img { width: 15px; height: 15px; border-radius: 4px; }
+      .powered b { color: var(--navy); font-weight: 700; }
     </style>
   </head>
   <body>
     <header>
-      <img class="logo" src="suarifybrowser.png" alt="" />
-      <span class="logo">Suarify Voice Browser</span>
+      <svg class="vbmark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 5l6.5 14h1L19 5" stroke="var(--brand)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span class="vbname">VoiceBrowser</span>
       <div id="statusPill" class="pill">idle</div>
       <button id="themeBtn" class="iconbtn" title="Toggle dark mode">🌙</button>
       <button id="settingsBtn" class="iconbtn" title="Settings">⚙</button>
@@ -186,6 +195,9 @@
       <span id="cfgStatus">…</span>
       <span id="stats">…</span>
       <span id="errLine" class="err"></span>
+      <div class="powered">
+        <img src="suarifybrowser.png" alt="" />Powered by <b>Suarify</b>
+      </div>
     </footer>
     <script src="popup.js"></script>
   </body>

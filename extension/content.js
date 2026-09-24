@@ -354,9 +354,68 @@
         return { ok: true, detail: `scrollY=${Math.round(window.scrollY)}` };
       }
 
+      case "read_aloud": {
+        const needle = (action.text || "").toLowerCase();
+        const el = findElementWithText(needle);
+        if (!el) return { ok: false, detail: `no section on the page contains "${action.text}"` };
+        el.scrollIntoView({ block: "center", inline: "nearest" });
+        // highlight by temporary data-vb-id so the shared highlighter can flash it
+        let id = el.getAttribute("data-vb-id");
+        if (!id) {
+          if (!window.__vbNextId) window.__vbNextId = 1;
+          id = `e${String(window.__vbNextId++)}r`;
+          el.setAttribute("data-vb-id", id);
+        }
+        highlight(id, 1500);
+        const text = el.innerText || el.textContent || action.text;
+        const spoken = speak(text, action.lang);
+        return { ok: true, detail: spoken ? `reading ${text.length} chars` : "speech synthesis unavailable" };
+      }
+
       default:
         return { ok: false, detail: `unknown in-page action ${action.type}` };
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Read-aloud helpers
+  // ---------------------------------------------------------------------------
+  /** Deepest element whose visible text contains `needle`; the smallest containing block wins. */
+  function findElementWithText(needle) {
+    if (!needle) return null;
+    const sel = ["p", "li", "div", "article", "section", "blockquote", "td", "th", "h1", "h2", "h3", "h4", "h5", "h6", "dd", "dt", "label", "span", "summary", "a[href]", "button"].join(",");
+    let best = null;
+    let bestScore = Infinity;
+    for (const el of document.querySelectorAll(sel)) {
+      const t = (el.innerText || "").trim();
+      if (!t || t.length > 12000) continue;
+      if (!t.toLowerCase().includes(needle)) continue;
+      const score = t.length;
+      if (score < bestScore) {
+        bestScore = score;
+        best = el;
+      }
+    }
+    return best;
+  }
+
+  /** Speak `text` aloud via the Web Speech synthesis API, preferring the configured voice. */
+  function speak(text, lang) {
+    const synth = window.speechSynthesis;
+    if (!synth) return false;
+    synth.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    if (lang === "ms") utter.lang = "ms-MY";
+    else if (lang === "en") utter.lang = "en-US";
+    else utter.lang = navigator.language || "en-US";
+    const want = lang === "ms" ? /^ms/i : lang === "en" ? /^en[-_]US/i : null;
+    const voices = synth.getVoices();
+    if (want) {
+      const v = voices.find((x) => want.test(x.lang)) || voices.find((x) => /^en/i.test(x.lang));
+      if (v) utter.voice = v;
+    }
+    synth.speak(utter);
+    return true;
   }
 
   // ---------------------------------------------------------------------------

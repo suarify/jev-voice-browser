@@ -1,4 +1,4 @@
-# Suarify Voice Browser — Chrome extension
+# VoiceBrowser — Chrome extension
 
 Speak to control **the tab you're already in**. This is the extension port of the Node server
 app in the repo root. Same Jev (TypeSafe System One) decision engine, same policy gates — but
@@ -6,7 +6,8 @@ instead of a server driving a separate Playwright Chromium, a **manifest-v3 exte
 your current tab directly.
 
 UI: white background, teal brand text, navy secondary, with a subtle gradient — plus a
-🌙 dark-mode toggle (persisted per install).
+🌙 dark-mode toggle (persisted per install). Settings has swipeable SVG tutorial cards and a
+collapsible **API information** panel. Powered by **Suarify**.
 
 Borrowed from the two reference projects you pointed me at:
 
@@ -81,6 +82,9 @@ spoken URLs/numbers work too:
 | "kembali" / "ke hadapan" / "muat semula" | history |
 | "buka tab baru" / "tutup tab ini" / "tab seterusnya" | tabs |
 | "sahkan" / "batal" | confirm / cancel a destructive action |
+| "print screen" / "tangkap skrin" | saves a PNG screenshot of the visible tab |
+| "save as pdf" / "cetak" | opens the browser print dialog (save as PDF) |
+| "read the part that says X" / "baca bahagian yang ada X" | finds the section containing X, highlights it, and reads it aloud |
 | "dua" / "yang kedua" / "tiga" | pick numbered overlay (satu…lima) |
 
 English and Malay can be mixed in one session; the recognizer language is the main lever for
@@ -96,7 +100,7 @@ the same `is_command / intent / complete / target / destructive` reason table li
 ## Tests
 
 ```bash
-npm run test:ext     # 42 unit tests: spans, snapshot, policy, context, endpoint — no network
+npm run test:ext     # 47 unit tests: spans, snapshot, policy, context, endpoint — no network
 ```
 
 ## Limitations
@@ -109,3 +113,5 @@ npm run test:ext     # 42 unit tests: spans, snapshot, policy, context, endpoint
 - Element snapshots cap at 100 items, viewport-first; deep pages need a scroll first.
 - The API key is stored in `chrome.storage.local` (never synced) and only ever sent in the
   Authorization header of requests to your configured base URL.
+- "Print screen" uses the `downloads` permission to save the captured PNG; "save as pdf" opens
+  the browser's print dialog, which is where the PDF is produced.

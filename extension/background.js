@@ -449,14 +449,29 @@ async function execute(action) {
       return { ok: true, detail: next.url || "switched tab" };
     }
 
+    case "screenshot": {
+      await toast(tab.id, "📸 screenshot");
+      const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
+      const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+      const filename = `voicebrowser-${stamp}.png`;
+      await chrome.downloads.download({ url: dataUrl, filename, saveAs: false });
+      return { ok: true, detail: `saved ${filename}` };
+    }
+
+    case "print":
+      await toast(tab.id, "🖨 print / save as PDF");
+      await chrome.tabs.print();
+      return { ok: true, detail: "print dialog opened" };
+
     // In-page actions → content script.
     case "click_element":
     case "type_into_field":
     case "select_option":
     case "press_enter":
     case "scroll_down":
-    case "scroll_up": {
-      const res = await tabMessage(tab.id, { type: "execute", action });
+    case "scroll_up":
+    case "read_aloud": {
+      const res = await tabMessage(tab.id, { type: "execute", action: { ...action, lang: config.lang } });
       return res || { ok: false, detail: "content script unavailable on this page" };
     }
 

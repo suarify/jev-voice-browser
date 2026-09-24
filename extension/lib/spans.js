@@ -24,6 +24,9 @@ const TEXT_VERBS = [
   /\b(?:cari|gelintar)\s+(?:di\s+|pada\s+)?(?:google|youtube|wikipedia|github|amazon|reddit|twitter|x|hacker news|web)\s+(?:untuk\s+|tentang\s+)?/i,
   /\b(?:cari|gelintar|gugel)\s+(?:untuk\s+|tentang\s+)?/i,
   /\b(?:taip|taipkan|masukkan|tulis|letak|isi)\s+(?:dalam\s+)?/i,
+  // read aloud (read / baca): prefer the phrase after "says/contains/ada", else the whole tail
+  /\b(?:read|baca)\s+(?:aloud\s+|out\s+loud\s+)?(?:the\s+|bahagian\s+)?(?:part|area|section|text|content|bahagian|teks)\s+(?:that\s+|which\s+|yang\s+)?(?:says|contains|with|saying|ada|mengandungi)\s+/i,
+  /\b(?:read|baca)\s+(?:aloud\s+|out\s+loud\s+)?/i,
 ];
 
 // Trailing destination phrases to strip from a payload: English "... into the search box"
@@ -59,6 +62,10 @@ export function extractTextCandidates(transcript) {
   const out = [];
 
   for (const m of t.matchAll(/["“”']([^"“”']{1,120})["“”']/g)) pushUnique(out, m[1]);
+
+  // read-aloud: "read the part that says X" / "baca bahagian yang ada X" -> capture X (not the wrapper)
+  const readMatch = /(?:read|baca)\b.*?(?:says|saying|contains|with|ada|mengandungi|bertulis)\s+([^.,!?]+)/i.exec(t);
+  if (readMatch) pushUnique(out, readMatch[1]);
 
   const verbMatches = TEXT_VERBS.map((re) => re.exec(t))
     .filter(Boolean)

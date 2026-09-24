@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Suarify Voice Browser — Settings</title>
+    <title>VoiceBrowser — Settings</title>
     <style>
       :root {
         --bg0: #ffffff; --bg1: #f2fbfa; --bg2: #eaf4fb;
@@ -21,23 +21,54 @@
       * { box-sizing: border-box; }
       body {
         margin: 0; font: 14px/1.5 -apple-system, Segoe UI, Inter, sans-serif;
-        padding: 32px; max-width: 640px;
+        padding: 28px 32px 20px; max-width: 660px;
         background: linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 55%, var(--bg2) 100%);
         color: var(--text);
       }
       .head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-      .head img.logo { width: 34px; height: 34px; border-radius: 9px; }
-      h1 { font-size: 20px; margin: 0; font-weight: 800; }
-      h1 span {
-        background: linear-gradient(100deg, var(--brand) 10%, var(--navy) 90%);
-        -webkit-background-clip: text; background-clip: text; color: transparent;
-      }
+      .head .vbmark { width: 32px; height: 32px; flex: none; }
+      h1 { font-size: 20px; margin: 0; font-weight: 800; color: var(--brand); letter-spacing: -0.01em; }
       .head .iconbtn {
         margin-left: auto; background: none; border: 0; cursor: pointer; font-size: 20px;
         color: var(--navy); padding: 4px; border-radius: 8px;
       }
       .head .iconbtn:hover { background: rgba(13, 148, 136, 0.10); }
-      .sub { color: var(--muted); margin: 0 0 24px; }
+      .sub { color: var(--muted); margin: 0 0 18px; }
+
+      /* --- tutorial carousel --- */
+      .carousel { position: relative; margin-bottom: 22px; }
+      .track {
+        display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory;
+        scrollbar-width: none; cursor: grab; padding: 2px 0 6px;
+      }
+      .track::-webkit-scrollbar { display: none; }
+      .track.dragging { cursor: grabbing; scroll-snap-type: none; }
+      .tcard {
+        flex: 0 0 240px; scroll-snap-align: start;
+        background: var(--card); border: 1px solid var(--card-border); border-radius: 14px;
+        box-shadow: var(--shadow); padding: 14px; display: flex; flex-direction: column; gap: 8px;
+        user-select: none;
+      }
+      .tcard svg { width: 44px; height: 44px; }
+      .tcard h4 { margin: 0; font-size: 14px; color: var(--navy); }
+      .tcard .cmd {
+        margin-top: auto; font-size: 12px; font-weight: 700; color: #fff;
+        background: linear-gradient(120deg, var(--brand), var(--navy));
+        padding: 5px 9px; border-radius: 999px; align-self: flex-start; max-width: 100%;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      }
+      .car-nav { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 4px; }
+      .car-nav button {
+        border: 1px solid var(--card-border); background: var(--card); color: var(--navy);
+        border-radius: 999px; width: 28px; height: 28px; cursor: pointer; font-size: 15px; line-height: 1;
+      }
+      .car-nav button:hover { background: rgba(13, 148, 136, 0.10); }
+      .dots { display: flex; gap: 6px; }
+      .dots .dot {
+        width: 7px; height: 7px; border-radius: 999px; background: rgba(13, 148, 136, 0.25); cursor: pointer; transition: .15s;
+      }
+      .dots .dot.active { width: 18px; background: var(--brand); }
+
       label { display: block; margin-bottom: 16px; }
       label .name { display: block; font-weight: 700; margin-bottom: 4px; }
       label .desc { display: block; color: var(--muted); font-size: 12px; margin-bottom: 6px; }
@@ -57,23 +88,83 @@
       #status { font-size: 13px; margin-top: 4px; min-height: 18px; }
       #status.ok { color: var(--brand); }
       #status.err { color: var(--danger); }
-      details { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; color: var(--muted); font-size: 13px; box-shadow: var(--shadow); }
-      details summary { cursor: pointer; color: var(--text); font-weight: 700; }
-      details code { color: var(--brand); }
+
+      /* --- collapsible API information --- */
+      .api-info { background: var(--card); border: 1px solid var(--card-border); border-radius: 10px; margin-bottom: 16px; overflow: hidden; box-shadow: var(--shadow); }
+      .api-head {
+        width: 100%; display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+        background: none; border: 0; cursor: pointer; font: inherit; color: var(--text);
+      }
+      .api-head .api-title { font-weight: 700; font-size: 14px; }
+      .api-head .chev { margin-left: auto; transition: transform .18s; color: var(--navy); font-size: 12px; }
+      .api-info.open .chev { transform: rotate(180deg); }
+      .api-panel { padding: 0 12px 12px; display: grid; grid-template-columns: 110px 1fr; gap: 6px 10px; font-size: 12.5px; }
+      .api-panel .k { color: var(--muted); }
+      .api-panel code { color: var(--navy); word-break: break-all; font-size: 12px; }
+      .api-panel code.block {
+        display: block; background: var(--bg1); border: 1px solid var(--card-border);
+        border-radius: 8px; padding: 8px; white-space: pre-wrap; color: var(--text);
+        grid-column: 1 / -1;
+      }
       .save-row { display: flex; gap: 10px; align-items: center; }
       #saveBtn { padding: 11px 18px; font-size: 14px; }
       #saved { color: var(--brand); font-weight: 700; opacity: 0; transition: opacity .3s; }
       #saved.show { opacity: 1; }
+
+      footer.powered {
+        margin-top: 22px; border-top: 1px solid var(--card-border); padding-top: 12px;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        color: var(--muted); font-size: 12px;
+      }
+      footer.powered img { width: 16px; height: 16px; border-radius: 4px; }
+      footer.powered b { color: var(--navy); }
     </style>
   </head>
   <body>
     <div class="head">
-      <img class="logo" src="suarifybrowser.png" alt="" />
-      <h1>Suarify <span>Voice Browser</span></h1>
+      <svg class="vbmark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 5l6.5 14h1L19 5" stroke="var(--brand)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <h1>VoiceBrowser</h1>
       <button id="themeBtn" class="iconbtn" title="Toggle dark mode">🌙</button>
     </div>
     <p class="sub">Speak to control the tab you're in. The extension sends your transcript + a page snapshot to a
-    decision endpoint — TypeSafe Jev by default, or any compatible server you plug in.</p>
+    decision endpoint — TypeSafe Jev by default, or any compatible server you plug in. Swipe the cards to see what you can say.</p>
+
+    <div class="carousel" id="carousel">
+      <div class="track" id="track">
+        <div class="tcard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="13" rx="2.5"/><path d="M2.5 9h19M9 4.5v13" stroke="var(--navy)"/><circle cx="15.5" cy="14.5" r="2.2" fill="var(--brand)" stroke="none"/></svg>
+          <h4>Open a site</h4>
+          <span class="cmd">"go to wikipedia"</span>
+        </div>
+        <div class="tcard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5" stroke="var(--navy)"/></svg>
+          <h4>Search the web</h4>
+          <span class="cmd">"search for alan turing"</span>
+        </div>
+        <div class="tcard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l14 9-6 1-2.5 5z" fill="var(--brand)" stroke="none"/><circle cx="17" cy="17" r="4" stroke="var(--navy)"/><text x="17" y="19" text-anchor="middle" font-size="4.5" font-weight="700" fill="#fff" stroke="none">1</text></svg>
+          <h4>Click a result</h4>
+          <span class="cmd">"click the first result"</span>
+        </div>
+        <div class="tcard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="4" height="6" rx="1" fill="var(--brand)" stroke="none"/><path d="M7 9l5-4v14L7 15"/><path d="M14 9.5a4 4 0 010 5" stroke="var(--navy)"/><path d="M16.5 7a8 8 0 010 10" stroke="var(--navy)"/></svg>
+          <h4>Read a section aloud</h4>
+          <span class="cmd">"baca bahagian yang ada harga"</span>
+        </div>
+        <div class="tcard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="14" rx="2.5"/><path d="M3 8h18M3 12h18" stroke="var(--navy)"/><path d="M9 21h6M12 17v4"/></svg>
+          <h4>Save or screenshot</h4>
+          <span class="cmd">"print screen" · "save as pdf"</span>
+        </div>
+      </div>
+      <div class="car-nav">
+        <button id="prevBtn" title="Previous">‹</button>
+        <div class="dots" id="dots"></div>
+        <button id="nextBtn" title="Next">›</button>
+      </div>
+    </div>
 
     <label>
       <span class="name">Decision endpoint</span>
@@ -111,17 +202,21 @@
         <span class="name" style="margin:0;">Show numbered hints on every page</span>
       </label>
     </div>
-    <div class="hint" style="color:var(--muted);font-size:12px;margin-bottom:16px;">
-      When on, every clickable element gets a number (click-by-voice style) and you can say a bare number to click it.
-    </div>
 
-    <details>
-      <summary>Why a configurable endpoint?</summary>
-      <p>The original server app called the TypeSafe SDK from Node. The extension speaks the same wire protocol
-      (<code>POST {endpoint}</code> with a Bearer key) from a service worker, so the endpoint is swappable: keep
-      <code>https://api.typesafe.ai</code> for real Jev, or point at a local proxy / your own decision server for
-      free testing. A bare base URL gets <code>/v1/systemone</code> appended; a URL with a path is used verbatim.</p>
-    </details>
+    <div class="api-info" id="apiInfo">
+      <button class="api-head" id="apiToggle" type="button">
+        <span class="api-title">🔌 API information</span>
+        <span class="chev">▾</span>
+      </button>
+      <div class="api-panel" id="apiPanel" hidden>
+        <span class="k">Endpoint</span><code id="apiEndpoint">…</code>
+        <span class="k">Method</span><code>POST</code>
+        <span class="k">Authorization</span><code id="apiAuth">Bearer …</code>
+        <span class="k">Content-Type</span><code>application/json</code>
+        <span class="k">Model</span><code id="apiModel">…</code>
+        <span class="k">Request body</span><code class="block" id="apiBody">{"state": {…}, "questions": {…}, "model": "…"}</code>
+      </div>
+    </div>
 
     <div class="row">
       <button id="testBtn" class="ghost">Test connection</button>
@@ -132,6 +227,10 @@
       <button id="saveBtn">Save</button>
       <span id="saved">Saved ✓</span>
     </div>
+
+    <footer class="powered">
+      <img src="suarifybrowser.png" alt="" />Powered by <b>Suarify</b>
+    </footer>
 
     <script src="options.js"></script>
   </body>

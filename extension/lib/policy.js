@@ -239,6 +239,16 @@ function buildAction({ intentName, answers, candidates, snapshot, reasons, exclu
       return { decision: "act", action: { type: intentName, amount, label: `${intentName.replace("_", " ")} (${amount})` } };
     }
 
+    case "read_aloud": {
+      const text = pickSpan(answers.text_span, T.spanConfidence, candidates.text?.[0]);
+      if (!text) {
+        check(reasons, "text_span", "none", T.spanConfidence, false, "no text to read yet");
+        return { decision: "wait", summary: "read what?" };
+      }
+      check(reasons, "text_span", text, T.spanConfidence, true, "text to find copied verbatim");
+      return { decision: "act", action: { type: "read_aloud", text, label: `read: "${text}"` } };
+    }
+
     case "switch_tab": {
       const dir = answers.tab_direction?.choice && answers.tab_direction.choice !== "none" ? answers.tab_direction.choice : "next";
       return { decision: "act", action: { type: "switch_tab", direction: dir, label: `switch tab (${dir})` } };
@@ -269,6 +279,12 @@ export function describe(action) {
       return `click ${action.label || action.targetId}`;
     case "select_option":
       return `select "${action.text}" in ${action.label || action.targetId}`;
+    case "read_aloud":
+      return `read the part that says "${action.text}"`;
+    case "screenshot":
+      return "take a screenshot";
+    case "print":
+      return "save as PDF / print";
     default:
       return action.label || action.type.replace(/_/g, " ");
   }

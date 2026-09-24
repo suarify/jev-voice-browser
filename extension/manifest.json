@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Suarify Voice Browser",
-  "version": "0.2.0",
-  "description": "Control the current tab by voice. Jev (TypeSafe System One) — or your own decision endpoint — decides intent and target; numbered hints pick elements.",
-  "permissions": ["storage", "tabs"],
+  "name": "VoiceBrowser",
+  "version": "0.3.0",
+  "description": "Control the current tab by voice. Jev (TypeSafe System One) — or your own decision endpoint — decides intent and target; numbered hints pick elements. Powered by Suarify.",
+  "permissions": ["storage", "tabs", "downloads"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js",
@@ -11,7 +11,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Suarify Voice Browser",
+    "default_title": "VoiceBrowser",
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png",

@@ -28,7 +28,7 @@ export const MAX_INFLIGHT = 2; // overlapping Jev requests allowed; older ones a
 export const SILENCE_COMPLETE_MS = 900; // no new words for this long => treat command as complete
 // Intents that carry free text (a query or text to type) cannot be acted on mid-sentence.
 export const PAYLOAD_SILENCE_MS = 600;
-export const PAYLOAD_INTENTS = new Set(["search_web", "type_into_field", "select_option"]);
+export const PAYLOAD_INTENTS = new Set(["search_web", "type_into_field", "select_option", "read_aloud"]);
 export const HIGHLIGHT_MS = 600; // element flash on the page
 export const CANDIDATE_TTL_MS = 8000; // numbered overlays stay this long
 
@@ -157,6 +157,21 @@ export const INTENT_CRITERIA = {
     not_for: "Opening or closing tabs",
     examples: ["next tab", "switch tab", "go to the other tab", "tab seterusnya", "tukar tab"],
   },
+  screenshot: {
+    what: "Take a screenshot / print screen / capture the visible part of the page",
+    not_for: "Printing to PDF; scrolling",
+    examples: ["print screen", "take a screenshot", "capture the screen", "screenshot", "tangkap skrin"],
+  },
+  print: {
+    what: "Print the page or save it as PDF via the browser print dialog",
+    not_for: "Taking a screenshot; typing",
+    examples: ["save as pdf", "save this page as pdf", "print this page", "cetak halaman ini", "simpan sebagai pdf"],
+  },
+  read_aloud: {
+    what: "Read aloud the text of the section / area on the page that mentions a specific phrase (read the part that says <text>)",
+    not_for: "Typing or searching; reading a whole article out loud without naming a section",
+    examples: ["read the part that says hello world", "read the section with pricing", "baca bahagian yang ada harga", "baca teks hello"],
+  },
   confirm: {
     what: "Approve a pending action the browser asked to confirm (yes / confirm / do it / go ahead)",
     not_for: "New commands",
@@ -195,7 +210,7 @@ export const QUESTIONS = {
     instructions: {
       question: "Which browser action does the user ask for in `transcript`?",
       focus:
-        "The user may speak in English OR Bahasa Melayu (Malay): 'pergi ke'=go to, 'buka'=open, 'cari'=search, 'klik/tekan'=click, 'taip/masukkan'=type, 'tatal'=scroll, 'kembali'=back, 'muat semula'=reload, 'sahkan'=confirm, 'batal'=cancel. Judge the words said so far. If the sentence is unfinished, pick the action the words already commit to; if no action is recognizable pick none. `page` and `elements` describe what is currently on screen. `context.previous_page` and `context.recent_actions` (most recent first) say where the user just came from and what was just done: 'back to the results' after clicking a search result is go_back; 'the other one' or 'not that one' after a click is click_element on a different element.",
+        "The user may speak in English OR Bahasa Melayu (Malay): 'pergi ke'=go to, 'buka'=open, 'cari'=search, 'klik/tekan'=click, 'taip/masukkan'=type, 'tatal'=scroll, 'kembali'=back, 'muat semula'=reload, 'sahkan'=confirm, 'batal'=cancel, 'tangkap skrin'=screenshot, 'cetak'=print, 'baca'=read aloud. Judge the words said so far. If the sentence is unfinished, pick the action the words already commit to; if no action is recognizable pick none. `page` and `elements` describe what is currently on screen. `context.previous_page` and `context.recent_actions` (most recent first) say where the user just came from and what was just done: 'back to the results' after clicking a search result is go_back; 'the other one' or 'not that one' after a click is click_element on a different element.",
     },
     criteria: INTENT_CRITERIA,
   },

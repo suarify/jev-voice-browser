@@ -74,3 +74,9 @@ test("Bahasa Melayu: candidate numbers (satu/dua/tiga)", () => {
   assert.equal(parseCandidatePick("tiga"), 3);
   assert.equal(parseCandidatePick("yang kedua"), 2);
 });
+
+test("read-aloud: payload is the phrase after 'says/ada', not the wrapper", () => {
+  assert.equal(extractTextCandidates("read the part that says hello world")[0], "hello world");
+  assert.equal(extractTextCandidates("read the section with pricing")[0], "pricing");
+  assert.equal(extractTextCandidates("baca bahagian yang ada harga")[0], "harga");
+});
